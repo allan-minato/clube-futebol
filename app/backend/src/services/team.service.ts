@@ -1,18 +1,20 @@
-import TeamModel from '../models/team.model';
+import teamModel from '../database/models/Team';
 import { ITeam } from '../Interfaces/ITeam';
-// import { ITeamModel } from '../Interfaces/ITeamModel';
+import { ITeamModel } from '../Interfaces/ITeamModel';
 
-export default class TeamService {
-  private teamModel = new TeamModel();
+export default class TeamService implements ITeamModel {
+  private team = teamModel;
 
-  async getAllTeams(): Promise<ITeam[]> {
-    const teams = await this.teamModel.findAll();
-    return teams;
+  async findAll(): Promise<ITeam[]> {
+    const db = await this.team.findAll();
+    return db.map(({ id, teamName }) => (
+      { id, teamName }
+    ));
   }
 
-  async getTeamsById(id: number): Promise<ITeam | null> {
-    const team = await this.teamModel.findById(id);
+  async findById(id: number): Promise<ITeam | null> {
+    const db = await this.team.findByPk(id);
 
-    return team;
+    return db;
   }
 }
