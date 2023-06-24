@@ -1,3 +1,4 @@
+import IMatch, { IMatchUpdate } from '../Interfaces/IMatches';
 import IMatchModel from '../Interfaces/IMatchModel';
 import matchModels from '../database/models/Matches';
 import Teams from '../database/models/Team';
@@ -25,5 +26,29 @@ export default class MatchService implements IMatchModel {
       where: { inProgress },
     });
     return matchesInProgress;
+  }
+
+  async matchFinish(id: number) {
+    const result = await this.match.update({ inProgress: false }, { where: { id } });
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAA', result);
+
+    return result;
+  }
+
+  async matchUpdate(id: number, data: IMatchUpdate) {
+    const result = this.match.update(
+      {
+        ...data,
+      },
+      {
+        where: { id },
+      },
+    );
+    return result;
+  }
+
+  async matchCreate(data:IMatch) {
+    const result = this.match.create({ ...data, inProgress: true });
+    return result;
   }
 }
