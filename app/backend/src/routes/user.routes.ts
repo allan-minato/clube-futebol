@@ -1,20 +1,15 @@
 import { Router } from 'express';
 import LoginControler from '../controllers/user.controller';
-import validateLogin from '../middleware/login.middleware';
+import validateLogin from '../middleware/validation.middleware';
 
-const loginRouter = Router();
 const LoginController = new LoginControler();
 
-loginRouter.post(
-  '/',
-  validateLogin.validateLogin,
-  LoginController.login,
-);
+const loginRouter = Router();
 
-loginRouter.get(
-  '/role',
-  validateLogin.validateToken,
-  LoginController.getRole,
-);
+loginRouter.post('/', validateLogin.validateLogin, (req, res) =>
+  LoginController.login(req, res));
+
+loginRouter.get('/role', validateLogin.validateToken, (req, res) =>
+  LoginController.getRole(req, res));
 
 export default loginRouter;

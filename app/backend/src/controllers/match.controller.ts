@@ -1,42 +1,29 @@
 import { Request, Response } from 'express';
 import MatchService from '../services/match.service';
 
-class MatchControler {
-  private readonly matchService: MatchService;
+export default class MatchController {
+  private matchService = new MatchService();
 
-  constructor() {
-    this.matchService = new MatchService();
-  }
+  public async getAll(req: Request, res: Response): Promise<Response> {
+    const { inProgress } = req.query;
 
-  public getAll = async (req: Request, res: Response): Promise<Response> => {
-    try {
-      const { inProgress } = req.query;
-
-      const response = await this.matchService.getAll();
-
-      if (inProgress === undefined) {
-        return res.status(200).json(response);
-      }
-
-      const matchesInProgress = await this.matchService
-        .getAllMatchesInProgress(inProgress === 'true');
-
-      return res.status(200).json(matchesInProgress);
-    } catch (error) {
-      return res.status(401).json({ message: error });
+    if (inProgress !== undefined) {
+      const serviceResponse = await this.matchService.getAllMatchesInProgress(
+        inProgress === 'true',
+      );
+      return res.status(200).json(serviceResponse);
     }
-  };
+
+    const serviceResponse = await this.matchService.getAll();
+    return res.status(200).json(serviceResponse);
+  }
 
   public async matchFinish(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
 
-    const [result] = await this.matchService.matchFinish(Number(id));
-    console.log('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW', result);
-    if (result > 0) {
-      return res.status(200).json({ message: 'Finished' });
-    }
+    const serviceResponse = await this.matchService.matchFinish(Number(id));
 
-    return res.status(400).json({ message: 'Nada encontrado' });
+    return res.status(serviceResponse.status).json(serviceResponse.data);
   }
 
   public async matchUpdate(req: Request, res: Response): Promise<Response> {
@@ -45,15 +32,12 @@ class MatchControler {
 
     const serviceResponse = await this.matchService.matchUpdate(Number(id), body);
 
-    return res.status(200).json(serviceResponse);
+    return res.status(serviceResponse.status).json(serviceResponse.data);
   }
 
   public async matchCreate(req: Request, res: Response): Promise<Response> {
     const { body } = req;
-
     const serviceResponse = await this.matchService.matchCreate(body);
-    return res.status(201).json(serviceResponse);
+    return res.status(serviceResponse.status).json(serviceResponse.data);
   }
 }
-
-export default MatchControler;
