@@ -17,5 +17,3 @@ export const compare = (token: string): User => {
   const data = jwt.verify(token, secret);
   return data as User;
 };
-
-//

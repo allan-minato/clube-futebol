@@ -56,4 +56,24 @@ export default class MatchModel {
     const result = this.match.create({ ...data, inProgress: true });
     return result;
   }
+
+  async findOnlyId(): Promise<IMatch[]> {
+    const dbData = await this.match.findAll({
+      include: [
+        {
+          model: Teams,
+          as: 'homeTeam',
+          attributes: { exclude: ['id'] },
+        },
+        {
+          model: Teams,
+          as: 'awayTeam',
+          attributes: { exclude: ['id'] },
+        },
+      ],
+      where: { inProgress: 'false' },
+    });
+    const result = dbData.map((match) => match.dataValues);
+    return result;
+  }
 }
