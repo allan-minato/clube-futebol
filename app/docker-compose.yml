@@ -4,12 +4,12 @@ services:
     container_name: app_frontend
     build: ./frontend
     ports:
-      - 3000:3000
+      - 3002:3002
     working_dir: /app-frontend
     # Os `healthcheck` devem garantir que a aplicação
     # está operacional, antes de liberar o container
     healthcheck:
-      test: [ "CMD", "lsof", "-t", "-i:3000" ]
+      test: [ "CMD", "lsof", "-t", "-i:3002" ]
       timeout: 10s
       retries: 5
   backend:
